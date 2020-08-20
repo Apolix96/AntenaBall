@@ -11,7 +11,7 @@ public class GameSingleton<T> : MonoBehaviour where T : GameSingleton<T>
         if (Instance == null)
         {
             Instance = (T)this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
         }
         else
         {

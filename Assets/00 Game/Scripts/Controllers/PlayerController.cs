@@ -4,30 +4,36 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController Instance;
     public float constantMovementSpeed = 0.005f;
     public float controlMovementSpeedModifier = 10f;
     [SerializeField] public float waveSpeedModificator = 1f;
     [SerializeField] public float waveLifeModificator = 1f;
-    [SerializeField] public float waveSpawnRate = 1.5f;
+    [SerializeField] private float waveSpawnRate = 1.5f;
 
     private bool isAnim = false;
-    
+
     [SerializeField] private float lastSpawnTime = 0f;
+    [SerializeField] private float startTime = 0f;
     private Vector3 lastMousePosition;
     private Vector3 playerMovement;
 
     private float deltaX, deltaY;
     private Rigidbody2D rb;
-    
-        
+
+
     private float? lastMousePointX = null;
     private float? lastMousePointY = null;
 
     private int isSpawnBigWave = 0;
     public GameObject sparkle;
+
+    [SerializeField] private GameObject _controllGame;
+
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -36,12 +42,62 @@ public class PlayerController : MonoBehaviour
 
         if (other.gameObject.CompareTag("Chaser"))
         {
+            //_controllGame.VisiblePanelRestart();
             Instantiate(sparkle, transform);
             GetComponent<SpriteRenderer>().enabled = false;
             SpawnBigWave();
+            VisiblePanelRestartGame();
         }
-        
+
+        if (other.gameObject.CompareTag("Finish"))
+        {
+            StartCoroutine(loadLevel());
+        }
+
     }
+
+    IEnumerator loadLevel()
+    {
+        //AsyncOperation operation = SceneManager.LoadSceneAsync(_lvlScene);
+        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex + 1);
+        yield return null;
+    }
+    IEnumerator oldlvlRestart()
+    {
+        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
+        yield return null;
+    }
+
+   
+
+    private void Awake()
+    {
+        Instance = this;
+        lastSpawnTime = 0;
+        waveSpawnRate = 1.5f;
+    }
+    private void Start()
+    {
+        lastSpawnTime = 0;
+        waveSpawnRate = 1.5f;
+    }
+
+    private void VisiblePanelRestartGame()
+    {
+        _controllGame.SetActive(true);
+    }
+
+    private void InvisiblePanelRestartGame()
+    {
+        _controllGame.SetActive(false);
+    }
+
+    public void ReloadGame()
+    {
+        StartCoroutine(oldlvlRestart());
+        lastSpawnTime = 0;
+    }
+
 
 
     void Update()
@@ -54,9 +110,9 @@ public class PlayerController : MonoBehaviour
             lastMousePosition = mousePos;
             transform.position += playerMovement;
         }*/
-        
-                
-        if (Input.GetMouseButtonDown(0))
+
+
+        /*if (Input.GetMouseButtonDown(0))
         {
             lastMousePointX = Input.mousePosition.x;
             lastMousePointY = Input.mousePosition.y;
@@ -75,11 +131,11 @@ public class PlayerController : MonoBehaviour
         {
             float differenceX = Input.mousePosition.x - lastMousePointX.Value;
             float differenceY = Input.mousePosition.y - lastMousePointY.Value;
-            
-            transform.position = new Vector3(transform.position.x + (differenceX / 188) , transform.position.y+ (differenceY / 188), transform.position.z);
+
+            transform.position = new Vector3(transform.position.x + (differenceX / 188), transform.position.y + (differenceY / 188), transform.position.z);
             lastMousePointX = Input.mousePosition.x;
             lastMousePointY = Input.mousePosition.y;
-        }
+        }*/
 
         /*if (Input.touchCount > 0)
         {
@@ -120,7 +176,7 @@ public class PlayerController : MonoBehaviour
             }
             
         }*/
-        
+
         /*if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
@@ -148,20 +204,21 @@ public class PlayerController : MonoBehaviour
 */
 
         //transform.position += Vector3.up * constantMovementSpeed;
-        
-        if (Input.GetKey(KeyCode.W))
-            transform.position += Vector3.up *  (constantMovementSpeed * controlMovementSpeedModifier);
-        if (Input.GetKey(KeyCode.S))
-            transform.position += Vector3.down *  (constantMovementSpeed * controlMovementSpeedModifier);
-        if (Input.GetKey(KeyCode.D))
-            transform.position += Vector3.right *  (constantMovementSpeed * controlMovementSpeedModifier);
-        if (Input.GetKey(KeyCode.A))
-            transform.position += Vector3.left *  (constantMovementSpeed *  controlMovementSpeedModifier);
 
-        if (Time.time > lastSpawnTime)
+        /*if (Input.GetKey(KeyCode.W))
+            transform.position += Vector3.up * (constantMovementSpeed * controlMovementSpeedModifier);
+        if (Input.GetKey(KeyCode.S))
+            transform.position += Vector3.down * (constantMovementSpeed * controlMovementSpeedModifier);
+        if (Input.GetKey(KeyCode.D))
+            transform.position += Vector3.right * (constantMovementSpeed * controlMovementSpeedModifier);
+        if (Input.GetKey(KeyCode.A))
+            transform.position += Vector3.left * (constantMovementSpeed * controlMovementSpeedModifier);*/
+
+        if (Time.timeSinceLevelLoad > lastSpawnTime)
         {
             if (isSpawnBigWave == 0)
             {
+
                 Anim();
                 SpawnWave();
             }
@@ -169,16 +226,14 @@ public class PlayerController : MonoBehaviour
             {
                 isSpawnBigWave--;
             }
-            
             lastSpawnTime += waveSpawnRate;
         }
-            
-        
+
     }
-    
+
     public void Anim()
     {
-        
+
         Sequence mySequence = DOTween.Sequence();
         //Instantiate(sparkleTouchEffectPrefab, transform);
         //mySequence.Append(transform.DOScale(0.35f, 0.1f)).Append(transform.DOScale(0.30f, 0.1f));
@@ -187,25 +242,25 @@ public class PlayerController : MonoBehaviour
         {
             Vector3 startScale = transform.localScale;
             isAnim = true;
-            
+
             //Debug.Log(wb.transform.position + " " +wb.transform.position.normalized);
             //mySequence.Append(transform.DOMove(startPosition - wb.transform.position.normalized * 0.1f, 0.25f)).
             mySequence.Append(transform.DOScale(new Vector3(0.35f, 0.35f, 1f), 0.25f)).
-                Append(transform.DOScale(startScale, 0.25f)).OnComplete(() => { isAnim = false; });;
-            
+                Append(transform.DOScale(startScale, 0.25f)).OnComplete(() => { isAnim = false; }); ;
+
 
         }
 
     }
-    
+
     public void SpawnWave()
     {
-        
+
         var waveBehaviour = LevelController.Instance.CreateWave(transform.position, transform);
         waveBehaviour.speed *= waveSpeedModificator;
         waveBehaviour.lifeTime *= waveLifeModificator;
     }
-    
+
     public void SpawnBigWave()
     {
         var waveBehaviour = LevelController.Instance.CreateBoostWave(transform.position, transform, 5);
