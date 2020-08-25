@@ -5,30 +5,6 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/00 Game/Scenes/Main.unity
-    guid: 935b9c2f4d1d04748989a51126f89aa3
-  - enabled: 0
-    path: Assets/00 Game/Scenes/Levels/Level 1.unity
-    guid: 2222ecbd9370c294985d2c6fb36431f6
-  - enabled: 0
-    path: Assets/00 Game/Scenes/Levels/Level 2.unity
-    guid: a1ec0c8a6e3bc35428580cd4fe394940
-  - enabled: 0
-    path: Assets/00 Game/Scenes/Levels/Level 3.unity
-    guid: b62a1b1ab2ba79f4fb540663c0f8b6ab
-  - enabled: 0
-    path: Assets/00 Game/Scenes/Levels/Level 4.unity
-    guid: 5a9998f6b0baf6f4d8328af18602792e
-  - enabled: 0
-    path: Assets/00 Game/Scenes/Levels/Level 5.unity
-    guid: da41ac496c30a17429c3f194f256b878
-  - enabled: 0
-    path: Assets/00 Game/Scenes/Levels/Level 6.unity
-    guid: 6f9ae379e242a2e46b1dd1d3ada5eb64
-  - enabled: 0
-    path: Assets/00 Game/Scenes/HyperCasual/HyperCasual.unity
-    guid: 2c22705f70c344a35ac417b323050094
   - enabled: 1
     path: Assets/00 Game/Scenes/CpiTest/HCMinimal lv1.unity
     guid: dfbbffc5081c6a44399e747836da0cf0
